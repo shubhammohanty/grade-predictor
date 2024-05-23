@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gp/firebase_options.dart';
 import 'package:gp/pages/login_page.dart';
+import 'package:gp/pages/register_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,7 +10,7 @@ void main() {
   runApp(const MaterialApp(
     title: 'grade-predictor',
     debugShowCheckedModeBanner: false,
-    home: LoginPage(),
+    home: RegisterPage(),
   ));
 }
 

@@ -1,4 +1,4 @@
 # grade-predictor app
 
-A new grade-predictor application project.for elevateme
+A new grade-predictor application project for elevateme
 

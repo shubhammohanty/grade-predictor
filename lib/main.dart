@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gp/firebase_options.dart';
@@ -10,7 +11,7 @@ void main() {
   runApp(const MaterialApp(
     title: 'grade-predictor',
     debugShowCheckedModeBanner: false,
-    home: RegisterPage(),
+    home: HomePage(),
   ));
 }
 
@@ -30,6 +31,13 @@ class HomePage extends StatelessWidget {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
+              final user = FirebaseAuth.instance.currentUser;
+              if(user?.emailVerified ?? false){   //check if user's email is verified
+                print("user verified");
+              }
+              else{
+                print("user not verified");
+              }
                 return const Text("done");
               default:
                 return const Text("loading....");

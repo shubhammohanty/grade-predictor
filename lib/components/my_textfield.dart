@@ -27,11 +27,11 @@ class MyTextField extends StatelessWidget {
         enableSuggestions: enableSuggestions,
         decoration: InputDecoration(
             enabledBorder:  OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(25.0),
               borderSide:const BorderSide(color: Color.fromARGB(255, 238, 240, 240)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(13.0),
               borderSide:const BorderSide(color: Color.fromARGB(255, 236, 240, 240)),
             ),
             fillColor: const Color(0xffF7F7F7),

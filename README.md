@@ -1,4 +1,4 @@
-# gp
+# grade-predictor app
 
 A new Flutter project.
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "823965770843",
+    "project_id": "elevateme-gradepredictor",
+    "storage_bucket": "elevateme-gradepredictor.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823965770843:android:44a86bd2754b073b5bcb7e",
+        "android_client_info": {
+          "package_name": "com.elevatemeofficial.gp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8ALbECF4v0g9wvKt-O0Ub9gcOP0oxQ_0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

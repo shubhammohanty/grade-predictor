@@ -1,0 +1,154 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:gp/components/my_textfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gp/firebase_options.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  // text editing controllers
+  late final TextEditingController _email; 
+ //late tells that we're going to assign value to this variable before using it
+  late final TextEditingController _password;
+
+  @override
+  void initState() {
+    _email = TextEditingController();
+    _password = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  // sign user in method
+  void logUserIn() async {
+    await Firebase.initializeApp(           //firebase app initialization
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    final email = _email.text;
+    final password = _password.text;
+    try{
+    final userCredentials = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);  //registering the user
+    print(userCredentials);
+    print("doneeeeeeeeeeeeeeeeeeeeee");
+    } on FirebaseAuthException catch (e){
+     
+        print(e);//giveout error that invalid credentials
+      
+    } 
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset : false,
+      backgroundColor: const Color.fromARGB(255, 253, 253, 253),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Hello, \nWelcome Back", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 50,fontWeight: FontWeight.bold)),
+
+              const SizedBox(height: 30),
+              
+
+              // email textfield
+              MyTextField(
+                controller: _email,
+                hintText: 'email',
+                obscureText: false,
+                autocorrect: true,
+                enableSuggestions: true,
+              ),
+
+              const SizedBox(height: 15),
+
+              // password textfield
+              MyTextField(
+                controller: _password,
+                hintText: 'Password',
+                obscureText: true,
+                autocorrect: false,
+                enableSuggestions: false,
+              ),
+
+              const SizedBox(height: 10),
+
+              // forgot password?
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 50),
+
+              // sign in button
+              GestureDetector(
+                onTap: logUserIn,
+                child: Container(
+                  padding: const EdgeInsets.all(25),
+                  margin: const EdgeInsets.symmetric(horizontal: 25),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Sign In",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 50),
+
+              // not a member? register now
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Not a member?',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'Register now', //needs to be routed to signup_page.dart
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

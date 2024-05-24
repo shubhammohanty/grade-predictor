@@ -27,8 +27,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
+    return FutureBuilder(
           future: Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform,
           ),
@@ -50,7 +49,6 @@ class HomePage extends StatelessWidget {
               default:
                 return const Text("loading....");
             }
-          }),
-    );
+          });
   }
 }

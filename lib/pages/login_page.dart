@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     fontWeight: FontWeight.bold,
     foreground: Paint()
       ..shader = ui.Gradient.linear(
-        const Offset(0, 50),
+        const Offset(0, 120),
         const Offset(180, 20),
         <Color>[
           const Color.fromARGB(255, 255, 255, 255),

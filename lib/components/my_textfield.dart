@@ -28,16 +28,16 @@ class MyTextField extends StatelessWidget {
         decoration: InputDecoration(
             enabledBorder:  OutlineInputBorder(
               borderRadius: BorderRadius.circular(25.0),
-              borderSide:const BorderSide(color: Color.fromARGB(255, 238, 240, 240)),
+              borderSide:const BorderSide(color: Color.fromARGB(255, 28, 28, 28)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(13.0),
-              borderSide:const BorderSide(color: Color.fromARGB(255, 236, 240, 240)),
+              borderRadius: BorderRadius.circular(15.0),
+              borderSide:const BorderSide(color: Color.fromARGB(255, 50, 50, 50)),
             ),
-            fillColor: const Color(0xffF7F7F7),
+            fillColor: const Color.fromARGB(255, 28, 28, 28),
             filled: true,
             hintText: hintText,
-            hintStyle:const TextStyle(color: Color.fromARGB(255, 148, 148, 149) )),
+            hintStyle:const TextStyle(color: Color.fromARGB(255, 97, 97, 97) )),
       ),
     );
   }

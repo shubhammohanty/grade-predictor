@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gp/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gp/firebase_options.dart';
+import 'dart:ui' as ui;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,17 +57,28 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color.fromARGB(255, 253, 253, 253),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Hello, \nWelcome Back",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontSize: 50, fontWeight: FontWeight.bold)),
+              Text(
+  "Hello, \nWelcome Back",
+  style: GoogleFonts.varelaRound(
+    fontSize: 50,
+    fontWeight: FontWeight.bold,
+    foreground: Paint()
+      ..shader = ui.Gradient.linear(
+        const Offset(0, 50),
+        const Offset(180, 20),
+        <Color>[
+          const Color.fromARGB(255, 255, 255, 255),
+          const Color.fromARGB(255, 73, 73, 73),
+        ],
+      )
+  ),
+),
 
               const SizedBox(height: 30),
 
@@ -120,14 +133,14 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.symmetric(horizontal: 25),
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Center(
                     child: Text(
-                      "Sign In",
+                      "Login",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 0, 0, 0),
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),

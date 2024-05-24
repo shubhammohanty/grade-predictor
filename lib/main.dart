@@ -14,7 +14,7 @@ void main() {
   runApp(MaterialApp(
     title: 'grade-predictor',
     debugShowCheckedModeBanner: false,
-    home: const HomePage(),
+    home: const LoginPage(),
     routes: {
       '/login/': (context) => const LoginPage(),
       '/register/': (context) => const RegisterPage(),

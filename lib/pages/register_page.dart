@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:gp/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart'; //necessary for firebase authentication
 import 'package:gp/firebase_options.dart'; //necessary for firebase app initialization
+import 'dart:ui' as ui;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -73,17 +75,28 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xffffffff),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Hello, \nGet Started",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontSize: 50, fontWeight: FontWeight.bold)),
+              Text(
+  "Hello, \nGet Started",
+  style: GoogleFonts.varelaRound(
+    fontSize: 50,
+    fontWeight: FontWeight.bold,
+    foreground: Paint()
+      ..shader = ui.Gradient.linear(
+        const Offset(0, 50),
+        const Offset(180, 20),
+        <Color>[
+          const Color.fromARGB(255, 255, 255, 255),
+          const Color.fromARGB(255, 73, 73, 73),
+        ],
+      )
+  ),
+),
 
               const SizedBox(height: 25),
 
@@ -128,14 +141,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.symmetric(horizontal: 25),
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Center(
                     child: Text(
                       "Sign Up",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 0, 0, 0),
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),

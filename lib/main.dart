@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gp/firebase_options.dart';
 import 'package:gp/pages/forgot_pass_page.dart';
 import 'package:gp/pages/login_page.dart';
+import 'package:gp/pages/main_ui.dart';
 import 'package:gp/pages/register_page.dart';
 import 'package:gp/pages/verifyemail_view.dart';
 
@@ -38,14 +39,13 @@ class HomePage extends StatelessWidget {
                 if (user != null) {
                   if (user.emailVerified) {
                     //check if user's email is verified
-                    print("user verified");
+                    return const MainUi();
                   } else {
                     return const VerifyEmailPage();
                   }
                 } else {
                   return const LoginPage();
                 }
-                return const Text("Done");
               default:
                 return const Text("loading....");
             }

@@ -58,14 +58,13 @@ class _RegisterPageState extends State<RegisterPage> {
         final userCredentials = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: email, password: password); //registering the user
-        print(userCredentials); 
+        print(userCredentials);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        // alert that email already registered
-      }
-      else if(e.code == 'invalid-email'){
-        // alert the user that email is invalid
+        print("already existssssssssssssssssssssssss");// alert that email already registered
+      } else if (e.code == 'invalid-email') {
+       print("invalid emaillllllllllll"); // alert the user that email is invalid
       }
     }
   }
@@ -80,9 +79,13 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Hello, \nGet Started", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 50,fontWeight: FontWeight.bold)),
+              Text("Hello, \nGet Started",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: 50, fontWeight: FontWeight.bold)),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
 
               // email textfield
               MyTextField(
@@ -116,21 +119,21 @@ class _RegisterPageState extends State<RegisterPage> {
                 enableSuggestions: false,
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 45),
 
               // sign in button
               GestureDetector(
                 onTap: registerUserIn,
                 child: Container(
-                  padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.symmetric(horizontal: 25),
                   decoration: BoxDecoration(
                     color: Colors.black,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Center(
                     child: Text(
-                      "Sign In",
+                      "Sign Up",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -141,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 40),
 
               // not a member? register now
               Row(
@@ -152,13 +155,22 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   const SizedBox(width: 4),
-                  const Text(
-                    'Login now', //needs to be routed to signup_page.dart
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil( //routes user to login_page.dart
+                          //routes user to register page
+                          '/login/',
+                          (route) =>
+                              false); //(route) => false tells flutter to push to a new page and also removed the last page
+                    },
+                    child: const Text(
+                      'Login now', 
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                  )
                 ],
               )
             ],

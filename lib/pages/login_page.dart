@@ -13,8 +13,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   // text editing controllers
-  late final TextEditingController _email; 
- //late tells that we're going to assign value to this variable before using it
+  late final TextEditingController _email;
+  //late tells that we're going to assign value to this variable before using it
   late final TextEditingController _password;
 
   @override
@@ -33,41 +33,46 @@ class _LoginPageState extends State<LoginPage> {
 
   // sign user in method
   void logUserIn() async {
-    await Firebase.initializeApp(           //firebase app initialization
+    await Firebase.initializeApp(
+      //firebase app initialization
       options: DefaultFirebaseOptions.currentPlatform,
     );
     final email = _email.text;
     final password = _password.text;
-    try{
-    final userCredentials = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);  //registering the user
-    print(userCredentials);
-    print("doneeeeeeeeeeeeeeeeeeeeee");
-    } on FirebaseAuthException catch (e){
-     
-        print(e);//giveout error that invalid credentials
-      
-    } 
+    try {
+      final userCredentials = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: email, password: password); //registering the user
+      print(userCredentials);
+      print("doneeeeeeeeeeeeeeeeeeeeee");
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      print("invalid credsssssssssssss"); //giveout error that invalid credentials
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset : false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromARGB(255, 253, 253, 253),
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Hello, \nWelcome Back", style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 50,fontWeight: FontWeight.bold)),
+              Text("Hello, \nWelcome Back",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: 50, fontWeight: FontWeight.bold)),
 
               const SizedBox(height: 30),
-              
 
               // email textfield
               MyTextField(
                 controller: _email,
-                hintText: 'email',
+                hintText: 'Email',
                 obscureText: false,
                 autocorrect: true,
                 enableSuggestions: true,
@@ -92,25 +97,31 @@ class _LoginPageState extends State<LoginPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(    //routes user to register_page.dart
+                          '/forgotpass/', (route) => false);
+                      },
+                      child: Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                    )
                   ],
                 ),
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 40),
 
               // sign in button
               GestureDetector(
                 onTap: logUserIn,
                 child: Container(
-                  padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.symmetric(horizontal: 25),
                   decoration: BoxDecoration(
                     color: Colors.black,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(30),
                   ),
                   child: const Center(
                     child: Text(
@@ -136,13 +147,19 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   const SizedBox(width: 4),
-                  const Text(
-                    'Register now', //needs to be routed to signup_page.dart
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(    //routes user to register_page.dart
+                          '/register/', (route) => false); //(route) => false tells flutter to push to a new page and also removed the last page
+                    },
+                    child: const Text(
+                      'Register now', 
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                  )
                 ],
               )
             ],

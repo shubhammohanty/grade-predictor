@@ -6,6 +6,7 @@ import 'package:gp/pages/forgot_pass_page.dart';
 import 'package:gp/pages/login_page.dart';
 import 'package:gp/pages/main_ui.dart';
 import 'package:gp/pages/register_page.dart';
+import 'package:gp/pages/settings_page.dart';
 import 'package:gp/pages/verifyemail_view.dart';
 
 void main() {
@@ -14,11 +15,12 @@ void main() {
   runApp(MaterialApp(
     title: 'grade-predictor',
     debugShowCheckedModeBanner: false,
-    home: const LoginPage(),
+    home: const HomePage(),
     routes: {
       '/login/': (context) => const LoginPage(),
       '/register/': (context) => const RegisterPage(),
       '/forgotpass/': (context) => const ForgotPassPage(),
+      '/settings/': (context) => const SettingsPage(),
     },
   ));
 }
@@ -39,7 +41,7 @@ class HomePage extends StatelessWidget {
                 if (user != null) {
                   if (user.emailVerified) {
                     //check if user's email is verified
-                    return const MainUi();
+                  return const MainUi();  
                   } else {
                     return const VerifyEmailPage();
                   }

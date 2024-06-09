@@ -51,19 +51,52 @@ class _RegisterPageState extends State<RegisterPage> {
     final confirmpassword = _confirmpassword.text;
     try {
       if (!regex.hasMatch(password)) {
-        //alert that password not strong
+        devtools.log("Weak Password");//alert that password not strong
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Weak Password"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
       } else if (password != confirmpassword) {
-        //alert that passwords do not match
+        devtools.log("Passwords not Matching");//alert that passwords do not match
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Passwords Not Matching"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
       } else {
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: email, password: password); //registering the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Registered The User"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         devtools.log("account already exists");// alert that email already registered
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Account Already Exists"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
       } else if (e.code == 'invalid-email') {
        devtools.log("invalid email"); // alert the user that email is invalid
+       ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Invalid Email"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
+      }
+      else{
+        devtools.log(e.toString());
       }
     }
   }

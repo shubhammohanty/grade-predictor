@@ -106,6 +106,12 @@ Future<bool> showLogOutDialog(BuildContext context) {
                await FirebaseAuth.instance.signOut();
                 Navigator.of(context).pop(true);
                 Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (_) => false);
+                ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Logged Out"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
                 
               },
             ),

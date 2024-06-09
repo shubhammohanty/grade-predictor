@@ -51,8 +51,22 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on FirebaseAuthException catch (e) {
       devtools.log(e.toString());
-      devtools
-          .log('invalid credentials'); //giveout error that invalid credentials
+
+      if (e.code == "invalid-credential" || e.code == "invalid-email") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Invalid Credentials"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
+      } else if (e.code == "network-request-failed") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Network Error"),
+            behavior: SnackBarBehavior.floating,
+          ), 
+        );
+      }
     }
   }
 

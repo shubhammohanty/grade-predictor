@@ -24,6 +24,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           TextButton(onPressed:() async {
             final user = FirebaseAuth.instance.currentUser;
             await user?.sendEmailVerification();
+            ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Verification Link Sent"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
 
           }, child: const Text("email Verification link")),
         ],

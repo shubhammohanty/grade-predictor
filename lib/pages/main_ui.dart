@@ -21,10 +21,7 @@ class _MainUiState extends State<MainUi> {
           const Text('click below to logout'),
           TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  settingsRoute,
-                  (route) => false,
-                );
+                Navigator.of(context).pushNamed(settingsRoute);
               },
               child: const Text('Click for settings'))
         ],

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gp/constants/routes.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -20,7 +21,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       ),
       body: Column(
         children: [
-         const Text("This is the email verification view"),
+         const Text("If you did not receive the mail automatically, click on the link below"),
           TextButton(onPressed:() async {
             final user = FirebaseAuth.instance.currentUser;
             await user?.sendEmailVerification();
@@ -31,7 +32,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           ), //giveout error that invalid credentials
         );
 
-          }, child: const Text("email Verification link")),
+          }, child: const Text("send email")),
+          const Text("If you've verified your email, click continue below"),
+          TextButton(onPressed: () {
+            Navigator.of(context).pushNamedAndRemoveUntil( //routes user to login_page.dart
+                            loginRoute,
+                            (route) =>
+                                false);
+          }, child: const Text("Continue"),)
         ],
       )
     );

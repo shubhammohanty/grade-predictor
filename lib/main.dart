@@ -23,6 +23,7 @@ void main() {
       forgotPassRoute: (context) => const ForgotPassPage(),
       settingsRoute: (context) => const SettingsPage(),
       homeRoute: (context) => const HomePage(),
+      verifyPageRoute: (context) => const VerifyEmailPage(),
     },
   ));
 }

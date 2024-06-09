@@ -186,8 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              //routes user to register_page.dart
+                          Navigator.of(context).pushNamedAndRemoveUntil(   //routes user to register_page.dart
                               registerRoute,
                               (route) =>
                                   false); //(route) => false tells flutter to push to a new page and also removed the last page

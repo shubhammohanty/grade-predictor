@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!regex.hasMatch(password)) {
         devtools.log("Weak Password");//alert that password not strong
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Weak Password"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
@@ -61,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
       } else if (password != confirmpassword) {
         devtools.log("Passwords not Matching");//alert that passwords do not match
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Passwords Not Matching"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
@@ -71,11 +71,14 @@ class _RegisterPageState extends State<RegisterPage> {
             .createUserWithEmailAndPassword(
                 email: email, password: password); //registering the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Registered The User"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
         );
+        final user = FirebaseAuth.instance.currentUser;
+        await user?.sendEmailVerification();
+        Navigator.of(context).pushNamed(verifyPageRoute);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -89,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
       } else if (e.code == 'invalid-email') {
        devtools.log("invalid email"); // alert the user that email is invalid
        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Invalid Email"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
@@ -207,7 +210,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushNamedAndRemoveUntil( //routes user to login_page.dart
-                            //routes user to register page
                             loginRoute,
                             (route) =>
                                 false); //(route) => false tells flutter to push to a new page and also removed the last page

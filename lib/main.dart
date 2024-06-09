@@ -21,6 +21,7 @@ void main() {
       '/register/': (context) => const RegisterPage(),
       '/forgotpass/': (context) => const ForgotPassPage(),
       '/settings/': (context) => const SettingsPage(),
+      '/homepage/': (context) => const HomePage(),
     },
   ));
 }

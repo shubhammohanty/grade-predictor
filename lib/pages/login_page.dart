@@ -5,6 +5,7 @@ import 'package:gp/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gp/firebase_options.dart';
 import 'dart:ui' as ui;
+import 'dart:developer' as devtools show log;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -38,14 +39,19 @@ class _LoginPageState extends State<LoginPage> {
     final email = _email.text;
     final password = _password.text;
     try {
-      final userCredentials = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: email, password: password); //registering the user
-      print(userCredentials);
-      print("doneeeeeeeeeeeeeeeeeeeeee");
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      ); //registering the user
+      devtools.log('logged in with creds:');
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/homepage/',
+        (route) => false,
+      );
     } on FirebaseAuthException catch (e) {
-      print(e);
-      print("invalid credsssssssssssss"); //giveout error that invalid credentials
+      devtools.log(e.toString());
+      devtools
+          .log('invalid credentials'); //giveout error that invalid credentials
     }
   }
 
@@ -56,131 +62,135 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: FutureBuilder(
         future: Firebase.initializeApp(
-      //firebase app initialization
-      options: DefaultFirebaseOptions.currentPlatform,
-    ),
+          //firebase app initialization
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
         builder: (context, snapshot) {
           return SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-          "Hello, \nWelcome Back",
-          style: GoogleFonts.varelaRound(
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
-            foreground: Paint()
-        ..shader = ui.Gradient.linear(
-          const Offset(0, 120),
-          const Offset(180, 20),
-          <Color>[
-            const Color.fromARGB(255, 255, 255, 255),
-            const Color.fromARGB(255, 73, 73, 73),
-          ],
-        )
-          ),
-        ),
-        
-                const SizedBox(height: 30),
-        
-                // email textfield
-                MyTextField(
-                  controller: _email,
-                  hintText: 'Email',
-                  obscureText: false,
-                  autocorrect: true,
-                  enableSuggestions: true,
-                ),
-        
-                const SizedBox(height: 15),
-        
-                // password textfield
-                MyTextField(
-                  controller: _password,
-                  hintText: 'Password',
-                  obscureText: true,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                ),
-        
-                const SizedBox(height: 10),
-        
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(    //routes user to register_page.dart
-                            '/forgotpass/', (route) => false);
-                        },
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Hello, \nWelcome Back",
+                    style: GoogleFonts.varelaRound(
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                        foreground: Paint()
+                          ..shader = ui.Gradient.linear(
+                            const Offset(0, 120),
+                            const Offset(180, 20),
+                            <Color>[
+                              const Color.fromARGB(255, 255, 255, 255),
+                              const Color.fromARGB(255, 73, 73, 73),
+                            ],
+                          )),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // email textfield
+                  MyTextField(
+                    controller: _email,
+                    hintText: 'Email',
+                    obscureText: false,
+                    autocorrect: true,
+                    enableSuggestions: true,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // password textfield
+                  MyTextField(
+                    controller: _password,
+                    hintText: 'Password',
+                    obscureText: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // forgot password?
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              //routes user to register_page.dart
+                              '/forgotpass/', (route) => false,
+                            );
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // sign in button
+                  GestureDetector(
+                    onTap: logUserIn,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.symmetric(horizontal: 25),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Center(
                         child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.grey[700]),
+                          "Login",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 50),
+
+                  // not a member? register now
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Not a member?',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              //routes user to register_page.dart
+                              '/register/',
+                              (route) =>
+                                  false); //(route) => false tells flutter to push to a new page and also removed the last page
+                        },
+                        child: const Text(
+                          'Register now',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       )
                     ],
-                  ),
-                ),
-        
-                const SizedBox(height: 40),
-        
-                // sign in button
-                GestureDetector(
-                  onTap: logUserIn,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.symmetric(horizontal: 25),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-        
-                const SizedBox(height: 50),
-        
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Not a member?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(    //routes user to register_page.dart
-                            '/register/', (route) => false); //(route) => false tells flutter to push to a new page and also removed the last page
-                      },
-                      child: const Text(
-                        'Register now', 
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-        );
+          );
         },
       ),
     );

@@ -27,7 +27,10 @@ class _SettingsPageState extends State<SettingsPage> {
   ),
             onPressed: () {
               HapticFeedback.mediumImpact();
-              Navigator.of(context).pop();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/mainui/',
+                  (route) => false,
+                );
             },
           ),
         ),

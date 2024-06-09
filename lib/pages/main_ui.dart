@@ -1,7 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 
 class MainUi extends StatefulWidget {
   const MainUi({super.key});
@@ -21,12 +18,16 @@ class _MainUiState extends State<MainUi> {
         children: [
           const Text("This is the main UI page of the app"),
           const Text('click below to logout'),
-          TextButton(onPressed: () { Navigator.of(context).pushNamedAndRemoveUntil('/settings/', (_) => false); }, child: const Text('Click for settings'))
-         
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/settings/',
+                  (route) => false,
+                );
+              },
+              child: const Text('Click for settings'))
         ],
       ),
-    
-      );
+    );
   }
 }
-

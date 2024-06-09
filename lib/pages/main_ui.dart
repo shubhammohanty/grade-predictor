@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gp/constants/routes.dart';
 
 class MainUi extends StatefulWidget {
   const MainUi({super.key});
@@ -21,7 +22,7 @@ class _MainUiState extends State<MainUi> {
           TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/settings/',
+                  settingsRoute,
                   (route) => false,
                 );
               },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gp/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gp/constants/routes.dart';
 import 'package:gp/firebase_options.dart';
 import 'dart:ui' as ui;
 import 'dart:developer' as devtools show log;
@@ -45,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       ); //registering the user
       devtools.log('logged in with creds:');
       Navigator.of(context).pushNamedAndRemoveUntil(
-        '/homepage/',
+        homeRoute,
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {
@@ -121,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             Navigator.of(context).pushNamedAndRemoveUntil(
                               //routes user to register_page.dart
-                              '/forgotpass/', (route) => false,
+                              forgotPassRoute, (route) => false,
                             );
                           },
                           child: Text(
@@ -173,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               //routes user to register_page.dart
-                              '/register/',
+                              registerRoute,
                               (route) =>
                                   false); //(route) => false tells flutter to push to a new page and also removed the last page
                         },

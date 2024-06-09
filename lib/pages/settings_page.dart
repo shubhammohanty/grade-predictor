@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gp/constants/routes.dart';
  
 
 class SettingsPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
             onPressed: () {
               HapticFeedback.mediumImpact();
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/mainui/',
+                  homeRoute,
                   (route) => false,
                 );
             },
@@ -106,7 +107,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
                 print('------------------------------------------------------');
                 print(FirebaseAuth.instance.currentUser);
                 Navigator.of(context).pop(true);
-                Navigator.of(context).pushNamedAndRemoveUntil('/login/', (_) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (_) => false);
                 
               },
             ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:gp/components/my_textfield.dart';
 import 'package:firebase_auth/firebase_auth.dart'; //necessary for firebase authentication
+import 'package:gp/constants/routes.dart';
 import 'package:gp/firebase_options.dart'; //necessary for firebase app initialization
 import 'dart:ui' as ui;
 
@@ -174,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       onTap: () {
                         Navigator.of(context).pushNamedAndRemoveUntil( //routes user to login_page.dart
                             //routes user to register page
-                            '/login/',
+                            loginRoute,
                             (route) =>
                                 false); //(route) => false tells flutter to push to a new page and also removed the last page
                       },

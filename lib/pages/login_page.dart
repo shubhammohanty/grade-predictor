@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
         password: password,
       ); //registering the user
-      devtools.log('logged in with creds:');
+      devtools.log('logged in successfully');
       Navigator.of(context).pushNamedAndRemoveUntil(
         homeRoute,
         (route) => false,

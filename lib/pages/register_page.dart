@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart'; //necessary for firebase auth
 import 'package:gp/constants/routes.dart';
 import 'package:gp/firebase_options.dart'; //necessary for firebase app initialization
 import 'dart:ui' as ui;
+import 'dart:developer' as devtools show log;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -54,16 +55,15 @@ class _RegisterPageState extends State<RegisterPage> {
       } else if (password != confirmpassword) {
         //alert that passwords do not match
       } else {
-        final userCredentials = await FirebaseAuth.instance
+        await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
                 email: email, password: password); //registering the user
-        print(userCredentials);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        print("already existssssssssssssssssssssssss");// alert that email already registered
+        devtools.log("account already exists");// alert that email already registered
       } else if (e.code == 'invalid-email') {
-       print("invalid emaillllllllllll"); // alert the user that email is invalid
+       devtools.log("invalid email"); // alert the user that email is invalid
       }
     }
   }

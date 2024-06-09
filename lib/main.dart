@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:gp/constants/routes.dart';
 import 'package:gp/firebase_options.dart';
 import 'package:gp/pages/forgot_pass_page.dart';
 import 'package:gp/pages/login_page.dart';
@@ -17,11 +19,11 @@ void main() {
     debugShowCheckedModeBanner: false,
     home: const HomePage(),
     routes: {
-      '/login/': (context) => const LoginPage(),
-      '/register/': (context) => const RegisterPage(),
-      '/forgotpass/': (context) => const ForgotPassPage(),
-      '/settings/': (context) => const SettingsPage(),
-      '/homepage/': (context) => const HomePage(),
+      loginRoute: (context) => const LoginPage(),
+      registerRoute: (context) => const RegisterPage(),
+      forgotPassRoute: (context) => const ForgotPassPage(),
+      settingsRoute: (context) => const SettingsPage(),
+      homeRoute: (context) => const HomePage(),
     },
   ));
 }

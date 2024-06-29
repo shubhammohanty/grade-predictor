@@ -15,27 +15,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: const Icon(
-    Icons.chevron_left,
-    color: Colors.black,
-    size: 40.0,
-  ),
-            onPressed: () {
-              HapticFeedback.mediumImpact();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  homeRoute,
-                  (route) => false,
-                );
-            },
-          ),
-        ),
+    return Scaffold(
+        appBar: AppBar(title: const Text('Settings Page'),),
         body: SingleChildScrollView(
           child: Column(
               children: [
@@ -81,8 +62,8 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ),
-        ),
-      );
+        );
+      
   }
 }
 
@@ -107,7 +88,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
                 Navigator.of(context).pop(true);
                 Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (_) => false);
                 ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Logged Out"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials

@@ -54,14 +54,14 @@ class _LoginPageState extends State<LoginPage> {
 
       if (e.code == "invalid-credential" || e.code == "invalid-email") {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Invalid Credentials"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
         );
       } else if (e.code == "network-request-failed") {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text("Network Error"),
             behavior: SnackBarBehavior.floating,
           ), 

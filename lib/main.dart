@@ -6,9 +6,12 @@ import 'package:gp/firebase_options.dart';
 import 'package:gp/pages/forgot_pass_page.dart';
 import 'package:gp/pages/login_page.dart';
 import 'package:gp/pages/main_ui.dart';
+import 'package:gp/pages/create_update_course_page.dart';
 import 'package:gp/pages/register_page.dart';
 import 'package:gp/pages/settings_page.dart';
 import 'package:gp/pages/verifyemail_view.dart';
+
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +27,9 @@ void main() {
       settingsRoute: (context) => const SettingsPage(),
       homeRoute: (context) => const HomePage(),
       verifyPageRoute: (context) => const VerifyEmailPage(),
+      newCoursePageRoute: (context) => const NewCoursePage(),
+      mainUIRoute: (context) => const MainUi(),
+
     },
   ));
 }

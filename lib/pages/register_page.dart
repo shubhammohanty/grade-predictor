@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -51,15 +52,17 @@ class _RegisterPageState extends State<RegisterPage> {
     final confirmpassword = _confirmpassword.text;
     try {
       if (!regex.hasMatch(password)) {
-        devtools.log("Weak Password");//alert that password not strong
+        devtools.log("Weak Password"); //alert that password not strong
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Weak Password"),
+            content: Text(
+                "Password must contain an Uppercase, a Lowercase, a Numeric and a Special character"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
         );
       } else if (password != confirmpassword) {
-        devtools.log("Passwords not Matching");//alert that passwords do not match
+        devtools
+            .log("Passwords not Matching"); //alert that passwords do not match
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Passwords Not Matching"),
@@ -67,9 +70,15 @@ class _RegisterPageState extends State<RegisterPage> {
           ), //giveout error that invalid credentials
         );
       } else {
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: email, password: password); //registering the user
+        CollectionReference colRef =
+            FirebaseFirestore.instance.collection("iiserb");
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: email, password: password); //registering the user
+        await colRef.doc(email).set(<String, dynamic>{
+          "email": email,
+          "RegisteredAt": DateTime.now().toString(),
+          "courses": [],
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Registered The User"),
@@ -82,7 +91,8 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        devtools.log("account already exists");// alert that email already registered
+        devtools.log(
+            "account already exists"); // alert that email already registered
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Account Already Exists"),
@@ -90,15 +100,14 @@ class _RegisterPageState extends State<RegisterPage> {
           ), //giveout error that invalid credentials
         );
       } else if (e.code == 'invalid-email') {
-       devtools.log("invalid email"); // alert the user that email is invalid
-       ScaffoldMessenger.of(context).showSnackBar(
+        devtools.log("invalid email"); // alert the user that email is invalid
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Invalid Email"),
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
         );
-      }
-      else{
+      } else {
         devtools.log(e.toString());
       }
     }
@@ -111,125 +120,124 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: FutureBuilder(
         future: Firebase.initializeApp(
-      //firebase app initialization
-      options: DefaultFirebaseOptions.currentPlatform,
-    ),
+          //firebase app initialization
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
         builder: (context, snapshot) {
           return SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-          "Hello, \nGet Started",
-          style: GoogleFonts.varelaRound(
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
-            foreground: Paint()
-        ..shader = ui.Gradient.linear(
-          const Offset(0, 120),
-          const Offset(180, 20),
-          <Color>[
-            const Color.fromARGB(255, 255, 255, 255),
-            const Color.fromARGB(255, 73, 73, 73),
-          ],
-        )
-          ),
-        ),
-        
-                const SizedBox(height: 25),
-        
-                // email textfield
-                MyTextField(
-                  controller: _email,
-                  hintText: 'Enter your email',
-                  obscureText:
-                      false, //whether to hide the entered text using bullet dots
-                  autocorrect: true,
-                  enableSuggestions: true,
-                ),
-        
-                const SizedBox(height: 15),
-        
-                // password textfield
-                MyTextField(
-                  controller: _password,
-                  hintText: 'Create Password',
-                  obscureText: true,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                ),
-        
-                const SizedBox(height: 15),
-        
-                // confirm password textfield
-                MyTextField(
-                  controller: _confirmpassword,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                  autocorrect: false,
-                  enableSuggestions: false,
-                ),
-        
-                const SizedBox(height: 45),
-        
-                // sign in button
-                GestureDetector(
-                  onTap: registerUserIn,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.symmetric(horizontal: 25),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Hello, \nGet Started",
+                    style: GoogleFonts.varelaRound(
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                        foreground: Paint()
+                          ..shader = ui.Gradient.linear(
+                            const Offset(0, 120),
+                            const Offset(180, 20),
+                            <Color>[
+                              const Color.fromARGB(255, 255, 255, 255),
+                              const Color.fromARGB(255, 73, 73, 73),
+                            ],
+                          )),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // email textfield
+                  MyTextField(
+                    controller: _email,
+                    hintText: 'Enter your email',
+                    obscureText:
+                        false, //whether to hide the entered text using bullet dots
+                    autocorrect: true,
+                    enableSuggestions: true,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // password textfield
+                  MyTextField(
+                    controller: _password,
+                    hintText: 'Create Password',
+                    obscureText: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // confirm password textfield
+                  MyTextField(
+                    controller: _confirmpassword,
+                    hintText: 'Confirm Password',
+                    obscureText: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                  ),
+
+                  const SizedBox(height: 45),
+
+                  // sign in button
+                  GestureDetector(
+                    onTap: registerUserIn,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      margin: const EdgeInsets.symmetric(horizontal: 25),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-        
-                const SizedBox(height: 40),
-        
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil( //routes user to login_page.dart
-                            loginRoute,
-                            (route) =>
-                                false); //(route) => false tells flutter to push to a new page and also removed the last page
-                      },
-                      child: const Text(
-                        'Login now', 
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
+
+                  const SizedBox(height: 40),
+
+                  // not a member? register now
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account?',
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
-                    )
-                  ],
-                )
-              ],
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              //routes user to login_page.dart
+                              loginRoute,
+                              (route) =>
+                                  false); //(route) => false tells flutter to push to a new page and also removed the last page
+                        },
+                        child: const Text(
+                          'Login now',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        );
+          );
         },
-    
       ),
     );
   }

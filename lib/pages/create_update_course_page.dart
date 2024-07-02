@@ -14,6 +14,7 @@ class NewCoursePage extends StatefulWidget {
 }
 
 class _NewCoursePageState extends State<NewCoursePage> {
+  String instituteName='';
   late final TextEditingController _courseId;
   late final TextEditingController _quizObt;
   late final TextEditingController _quizTotal;
@@ -53,13 +54,21 @@ class _NewCoursePageState extends State<NewCoursePage> {
 
   Future<void> checkNewOrExists(BuildContext context) async {
     final courseIDarg = context.getArgument<String>();
+    final userRef = FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.email);
+    await userRef.get().then(
+      (DocumentSnapshot doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          instituteName = data["institute"].toString();
+
+  });
+  devtools.log(instituteName);
     if (courseIDarg != null) {
       final docRef = FirebaseFirestore.instance
-          .collection("iiserb")
+          .collection(instituteName)
           .doc(FirebaseAuth.instance.currentUser?.email)
           .collection(courseIDarg.toString())
           .doc('analytics');
-      docRef.get().then(
+      await docRef.get().then(
         (DocumentSnapshot doc) {
           final data = doc.data() as Map<String, dynamic>;
           _courseId.text = courseIDarg.toString();
@@ -99,7 +108,7 @@ class _NewCoursePageState extends State<NewCoursePage> {
           double.parse(_assmntObt.text.toString()) <=
               double.parse(_assmntTotal.text.toString())) {
         CollectionReference colRef =
-            FirebaseFirestore.instance.collection("iiserb");
+            FirebaseFirestore.instance.collection(instituteName);
 await colRef
                             .doc(FirebaseAuth.instance.currentUser?.email)
                             .update({

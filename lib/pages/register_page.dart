@@ -17,6 +17,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  _RegisterPageState() {
+    _selectedValue = _institutesList[0];
+  }
   // text editing controllers
   late final TextEditingController
       _email; //late tells that we're going to assign value to this variable before using it
@@ -41,6 +44,9 @@ class _RegisterPageState extends State<RegisterPage> {
     _confirmpassword.dispose();
     super.dispose();
   }
+
+  String _selectedValue = '';
+  final _institutesList = ['Select Institute', 'iiserb', 'iitm'];
 
   // sign user in method
   void registerUserIn() async {
@@ -69,15 +75,30 @@ class _RegisterPageState extends State<RegisterPage> {
             behavior: SnackBarBehavior.floating,
           ), //giveout error that invalid credentials
         );
+      } else if (_selectedValue == 'Select Institute') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Select an Institute"),
+            behavior: SnackBarBehavior.floating,
+          ), //giveout error that invalid credentials
+        );
       } else {
         CollectionReference colRef =
-            FirebaseFirestore.instance.collection("iiserb");
+            FirebaseFirestore.instance.collection(_selectedValue.toString());
+        CollectionReference userRef =
+            FirebaseFirestore.instance.collection("users");
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: email, password: password); //registering the user
         await colRef.doc(email).set(<String, dynamic>{
           "email": email,
           "RegisteredAt": DateTime.now().toString(),
           "courses": [],
+        });
+        await userRef.doc(email).set(<String, dynamic>{
+          "email": email,
+          "userID": FirebaseAuth.instance.currentUser?.uid,
+          "RegisteredAt": DateTime.now().toString(),
+          "institute": _selectedValue,
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -146,6 +167,35 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
 
                   const SizedBox(height: 25),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: DropdownButtonFormField(
+                      value: _selectedValue,
+                      items: _institutesList.map((e) {
+                        return DropdownMenuItem(
+                          value: e,
+                          child: Text(e, style: const TextStyle(color: Color.fromARGB(255, 97, 97, 97) ),),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedValue = val as String;
+                        });
+                      },
+                      icon: const Icon(Icons.arrow_drop_down_circle,
+                          color: Color.fromARGB(255, 97, 97, 97)),
+                      decoration: const InputDecoration(
+                        labelText: "Select Institute",
+                        labelStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        prefixIcon: Icon(Icons.school, color: Color.fromARGB(255, 97, 97, 97),),          
+                                  ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
 
                   // email textfield
                   MyTextField(

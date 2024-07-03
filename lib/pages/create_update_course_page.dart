@@ -113,12 +113,12 @@ class _NewCoursePageState extends State<NewCoursePage> {
 await colRef
                             .doc(FirebaseAuth.instance.currentUser?.email)
                             .update({
-                          "courses": FieldValue.arrayUnion([_courseId.text]),
+                          "courses": FieldValue.arrayUnion([_courseId.text.toUpperCase().replaceAll(' ', '')]),
                         });
 
                         await colRef
                             .doc(FirebaseAuth.instance.currentUser?.email)
-                            .collection(_courseId.text.toString())
+                            .collection(_courseId.text.toString().toUpperCase().replaceAll(' ', ''))
                             .doc('analytics')
                             .set(<String, dynamic>{
                           "quizObt": double.parse(_quizObt.text),

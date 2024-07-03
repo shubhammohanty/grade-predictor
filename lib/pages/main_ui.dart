@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gp/constants/routes.dart';
 import 'dart:developer' as devtools show log;
+import 'dart:math';
 
 class MainUi extends StatefulWidget {
   const MainUi({super.key});
@@ -40,6 +41,58 @@ class _MainUiState extends State<MainUi> {
         devtools.log(errorMessage);
       });
     });
+  }
+
+  String calculateRelativeGrade(List<double> scores, double personScore) {
+    int n = scores.length;
+
+    // Calculate the mean
+    double mean = scores.reduce((a, b) => a + b) / n;
+
+    // Calculate the standard deviation
+    double variance =
+        scores.map((score) => pow(score - mean, 2)).reduce((a, b) => a + b) / n;
+    double sd = sqrt(variance);
+
+    // Determine the grade
+    if (personScore >= mean + 1.5 * sd) {
+      return 'A';
+    } else if (personScore >= mean + 1.0 * sd) {
+      return 'B+';
+    } else if (personScore >= mean + 0.5 * sd) {
+      return 'B';
+    } else if (personScore >= mean) {
+      return 'C+';
+    } else if (personScore >= mean - 0.5 * sd) {
+      return 'C';
+    } else if (personScore >= mean - 1.0 * sd) {
+      return 'D+';
+    } else if (personScore >= mean - 1.5 * sd) {
+      return 'D';
+    } else {
+      return 'F';
+    }
+  }
+
+  String calculateAbsoluteGrade(double score) {
+    score *= 100;
+    if (score >= 90) {
+      return 'A';
+    } else if (score >= 80) {
+      return 'B+';
+    } else if (score >= 70) {
+      return 'B';
+    } else if (score >= 60) {
+      return 'C+';
+    } else if (score >= 50) {
+      return 'C';
+    } else if (score >= 40) {
+      return 'D+';
+    } else if (score >= 30) {
+      return 'D';
+    } else {
+      return 'F';
+    }
   }
 
   Future<void> fetchCoursesAndGrades() async {
@@ -110,11 +163,14 @@ class _MainUiState extends State<MainUi> {
 
       if (currentUserAnalytics.exists) {
         double currentUserTotalOfOne = currentUserAnalytics['totalOfOne'];
-        //grade calculation
+        gradeRelative =
+            calculateRelativeGrade(tempgrade, currentUserTotalOfOne);
+        gradeAbsolute = calculateAbsoluteGrade(currentUserTotalOfOne);
 
         coursesWithGrades.add({
           'course': course,
           'gradeRelative': gradeRelative,
+          'gradeAbsolute': gradeAbsolute,
           'count': courseCount
         });
       }
@@ -190,7 +246,7 @@ class _MainUiState extends State<MainUi> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFF131820),
+        backgroundColor: const Color(0xFF17171a),
         body: Column(
           children: [
             Align(
@@ -218,8 +274,7 @@ class _MainUiState extends State<MainUi> {
                     ),
                     onPressed: () {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          mainUIRoute,
-                          (route) => false);
+                          mainUIRoute, (route) => false);
                     },
                   ),
                 ],
@@ -227,42 +282,62 @@ class _MainUiState extends State<MainUi> {
             ),
             const SizedBox(height: 10),
             Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    RichText(
-                      text: const TextSpan(
-                          style: TextStyle(
-                            fontSize: 35,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: "Hello There",
-                              style: TextStyle(
-                                  color: Color(0xFFF6F9FE),
-                                  fontWeight: FontWeight.w300),
-                            ),
-                          ]),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      child: const Text(
-                        "Never Underestimate Yourself! See you've come this far",
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RichText(
+                    text: const TextSpan(
                         style: TextStyle(
-                          color: Color(0xFFB9BEC6),
+                          fontSize: 35,
                         ),
+                        children: [
+                          TextSpan(
+                            text: "Hello ",
+                            style: TextStyle(
+                                color: Color(0xFFF6F9FE),
+                                fontWeight: FontWeight.w300),
+                          ),
+                          TextSpan(
+                            text: "There",
+                            style: TextStyle(
+                                color: Color(0xFFF6F9FE),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ]),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: const Text(
+                      "Never Underestimate Yourself! See you've come this far",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFFB9BEC6),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 50),
+            Container(
+              padding: const EdgeInsets.only(left: 25),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Your Courses",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
             institute == null
                 ? const Center(child: CircularProgressIndicator())
                 : Expanded(
@@ -270,30 +345,91 @@ class _MainUiState extends State<MainUi> {
                       itemCount: coursesWithGrades.length,
                       itemBuilder: (context, index) {
                         var courseInfo = coursesWithGrades[index];
-                        return ListTile(
-                          tileColor: Colors.white,
-                          leading: const Icon(Icons.book),
-                          title: Text(courseInfo['course']),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  "Relative Grade: ${courseInfo['gradeRelative']}"),
-                              Text("Count: ${courseInfo['count']} documents"),
-                            ],
+                        return Container(
+                          margin: const EdgeInsets.only(
+                              top: 10, bottom: 10, left: 20, right: 20),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.blue[600]),
+                          child: ListTile(
+                            leading: const Icon(
+                              Icons.book_rounded,
+                              size: 40,
+                              color: Colors.white,
+                            ),
+                            title: Text(
+                              courseInfo['course'],
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Relative: ${courseInfo['gradeRelative']}   |",
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      "   Absolute: ${courseInfo['gradeAbsolute']}",
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "No. of people who added this course: ${courseInfo['count']}",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.delete_rounded,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                              onPressed: () =>
+                                  deleteCourse(courseInfo['course']),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                  newCoursePageRoute,
+                                  arguments: courseInfo['course']);
+                            },
                           ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => deleteCourse(courseInfo['course']),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(newCoursePageRoute,
-                                arguments: courseInfo['course']);
-                          },
                         );
                       },
                     ),
                   ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              child: Container(
+                height: 50,
+                margin: const EdgeInsets.only(
+                    left: 30, right: 30, top: 10, bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 3,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: const Center(child: Icon(Icons.add_rounded, size: 40,)),
+              ),
+              onTap: () {
+                Navigator.of(context).pushNamed(newCoursePageRoute);
+              },
+            )
           ],
         ),
       ),

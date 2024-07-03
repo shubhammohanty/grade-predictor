@@ -19,6 +19,7 @@ void main() {
   runApp(MaterialApp(
     title: 'grade-predictor',
     debugShowCheckedModeBanner: false,
+    theme: ThemeData(fontFamily: 'Inter',),
     home: const HomePage(),
     routes: {
       loginRoute: (context) => const LoginPage(),

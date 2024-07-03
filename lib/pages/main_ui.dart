@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gp/constants/routes.dart';
-import 'package:gp/firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
 class MainUi extends StatefulWidget {
@@ -14,16 +12,107 @@ class MainUi extends StatefulWidget {
 }
 
 class _MainUiState extends State<MainUi> {
-  String instituteName = '';
-final userRef = FirebaseFirestore.instance
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser?.email);
-  Future<void> mainUIbuilder(BuildContext context) async {
-    
-    await userRef.get().then((DocumentSnapshot doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      instituteName = data["institute"].toString();
+  String? institute;
+  List<Map<String, dynamic>> coursesWithGrades = [];
+  bool isLoading = true;
+  String errorMessage = '';
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInstitute().then((value) {
+      if (value != null) {
+        setState(() {
+          institute = value;
+          devtools.log("institute name: ${institute}");
+          fetchCoursesAndGrades();
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Failed to fetch institute name.';
+        });
+      }
+    }).catchError((error) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error fetching institute: $error';
+      });
     });
+  }
+  Future<void> fetchCoursesAndGrades() async {
+    if (institute == null) return;
+
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection(institute!)
+          .doc(FirebaseAuth.instance.currentUser?.email)
+          .get();
+
+      if (snapshot.exists) {
+        List<dynamic> courses = snapshot['courses'];
+        devtools.log(courses.toString());
+        for (String course in courses) {
+          devtools.log(course);
+          await fetchGradeForCourse(course);
+        }
+      }
+    } catch (error) {
+      setState(() {
+        errorMessage = 'Error fetching courses and grades: $error';
+      });
+    } finally {
+      setState(() {
+        isLoading = false; // Ensure isLoading is set to false after fetching
+      });
+    }
+  }
+
+  Future<void> fetchGradeForCourse(String course) async {
+    List<double> tempgrade = [];        
+    String gradeRelative = "NA"; 
+    String gradeAbsolute = "NA"; 
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection(institute!)
+        .where('courses', arrayContains: course)
+        .get();
+
+    int courseCount = querySnapshot.size;
+    devtools.log(courseCount.toString());
+
+    for (var doc in querySnapshot.docs) {
+      DocumentSnapshot analyticsSnapshot = await FirebaseFirestore.instance
+          .collection(institute!)
+          .doc(doc.id)
+          .collection(course)
+          .doc('analytics')
+          .get();
+
+      if (analyticsSnapshot.exists) {
+        double totalOfOne = analyticsSnapshot['totalOfOne'];
+        devtools.log(totalOfOne.toString());
+        tempgrade.add(totalOfOne);
+      } 
+    }
+    devtools.log(tempgrade.toString());
+
+    if (tempgrade.isNotEmpty) {
+      DocumentSnapshot currentUserAnalytics = await FirebaseFirestore.instance
+          .collection(institute!)
+          .doc(FirebaseAuth.instance.currentUser?.email)
+          .collection(course)
+          .doc('analytics')
+          .get();
+
+      if (currentUserAnalytics.exists) {
+        double currentUserTotalOfOne = currentUserAnalytics['totalOfOne'];
+        //grade calculation
+
+        coursesWithGrades.add({'course': course, 'gradeRelative': gradeRelative, 'count': courseCount});
+        devtools.log(coursesWithGrades.toString());
+      }
+    }
   }
 
   @override
@@ -31,10 +120,7 @@ final userRef = FirebaseFirestore.instance
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFF131820),
-        body: FutureBuilder(
-            future: mainUIbuilder(context),
-            builder: (context, snapshot) {
-              return Column(
+        body: Column(
                 children: [
                   Align(
                     alignment: Alignment.centerRight,
@@ -94,39 +180,53 @@ final userRef = FirebaseFirestore.instance
                     ),
                   ),
                   const SizedBox(height: 40),
-                  StreamBuilder<DocumentSnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection(instituteName)
-                          .doc(FirebaseAuth.instance.currentUser?.email)
-                          .snapshots(),
-                      builder: (context, snapshot){
-                        devtools.log(instituteName);
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        if (!snapshot.hasData || snapshot.data == null) {
-                          return const Center(child: Text('No data available'));
-                        }
-
-                        var userDocument = snapshot.data!;
-                        devtools.log(userDocument["userID"]);
-
-                        return const Text('test');
-                        /*return Expanded(
-                          child: ListView.builder(
-                              itemCount: 4,
-                              itemBuilder: (ctx, index) {
-                                return Container();
-                              }),
-                        );*/
-                      })
+                   institute == null
+          ? Center(child: CircularProgressIndicator())
+          : Expanded(
+                  child: ListView.builder(
+                    itemCount: coursesWithGrades.length,
+                    itemBuilder: (context, index) {
+                      var courseInfo = coursesWithGrades[index];
+                      return ListTile(
+                        leading: Icon(Icons.book),
+                        title: Text(courseInfo['course']),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Relative: ${courseInfo['gradeRelative']}"),
+                            Text("Count: ${courseInfo['count']} documents"),
+                          ],
+                        ),
+                        trailing: Icon(Icons.arrow_forward),
+                        onTap: () {
+                          Navigator.of(context).pushNamed(newCoursePageRoute, arguments: courseInfo['course']);
+                        },
+                      );
+                    },
+                  ),
+                ),
                 ],
-              );
-            }),
+              ),
+            
       ),
     );
+  }
+}
+
+Future<String?> fetchInstitute() async {
+  try {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.email)
+        .get();
+
+    if (snapshot.exists) {
+      return snapshot['institute'];
+    } else {
+      return null;
+    }
+  } catch (e) {
+    print(e);
+    return null;
   }
 }

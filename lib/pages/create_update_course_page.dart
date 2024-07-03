@@ -203,7 +203,7 @@ await colRef
         ),
         backgroundColor: Colors.black,
         title:
-            const Text('Add New Course', style: TextStyle(color: Colors.white)),
+            const Text('Add/Update Course', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
       body: FutureBuilder(

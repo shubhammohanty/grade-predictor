@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gp/components/my_textfield.dart';
+import 'package:gp/constants/routes.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:gp/utilities/generics/get_Arguments.dart';
@@ -143,7 +144,10 @@ await colRef
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
-                        Navigator.pop(context);
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          //routes user to login_page.dart
+                          mainUIRoute,
+                          (route) => false);
 
 
         /*       await colRef

@@ -17,7 +17,6 @@ class _MainUiState extends State<MainUi> {
   bool isLoading = true;
   String errorMessage = '';
 
-
   @override
   void initState() {
     super.initState();
@@ -25,22 +24,24 @@ class _MainUiState extends State<MainUi> {
       if (value != null) {
         setState(() {
           institute = value;
-          devtools.log("institute name: ${institute}");
           fetchCoursesAndGrades();
         });
       } else {
         setState(() {
           isLoading = false;
           errorMessage = 'Failed to fetch institute name.';
+          devtools.log(errorMessage);
         });
       }
     }).catchError((error) {
       setState(() {
         isLoading = false;
         errorMessage = 'Error fetching institute: $error';
+        devtools.log(errorMessage);
       });
     });
   }
+
   Future<void> fetchCoursesAndGrades() async {
     if (institute == null) return;
 
@@ -52,15 +53,20 @@ class _MainUiState extends State<MainUi> {
 
       if (snapshot.exists) {
         List<dynamic> courses = snapshot['courses'];
-        devtools.log(courses.toString());
         for (String course in courses) {
-          devtools.log(course);
           await fetchGradeForCourse(course);
         }
       }
     } catch (error) {
       setState(() {
         errorMessage = 'Error fetching courses and grades: $error';
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Error fetching courses and grades"),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        devtools.log(errorMessage);
       });
     } finally {
       setState(() {
@@ -70,16 +76,15 @@ class _MainUiState extends State<MainUi> {
   }
 
   Future<void> fetchGradeForCourse(String course) async {
-    List<double> tempgrade = [];        
-    String gradeRelative = "NA"; 
-    String gradeAbsolute = "NA"; 
+    List<double> tempgrade = [];
+    String gradeRelative = "NA";
+    String gradeAbsolute = "NA";
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection(institute!)
         .where('courses', arrayContains: course)
         .get();
 
     int courseCount = querySnapshot.size;
-    devtools.log(courseCount.toString());
 
     for (var doc in querySnapshot.docs) {
       DocumentSnapshot analyticsSnapshot = await FirebaseFirestore.instance
@@ -91,11 +96,9 @@ class _MainUiState extends State<MainUi> {
 
       if (analyticsSnapshot.exists) {
         double totalOfOne = analyticsSnapshot['totalOfOne'];
-        devtools.log(totalOfOne.toString());
         tempgrade.add(totalOfOne);
-      } 
+      }
     }
-    devtools.log(tempgrade.toString());
 
     if (tempgrade.isNotEmpty) {
       DocumentSnapshot currentUserAnalytics = await FirebaseFirestore.instance
@@ -109,10 +112,78 @@ class _MainUiState extends State<MainUi> {
         double currentUserTotalOfOne = currentUserAnalytics['totalOfOne'];
         //grade calculation
 
-        coursesWithGrades.add({'course': course, 'gradeRelative': gradeRelative, 'count': courseCount});
-        devtools.log(coursesWithGrades.toString());
+        coursesWithGrades.add({
+          'course': course,
+          'gradeRelative': gradeRelative,
+          'count': courseCount
+        });
       }
     }
+  }
+
+  Future<void> deleteCourse(String course) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Caution'),
+          content: const Text('Are you sure you want to delete this course?'),
+          actions: [
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+
+                // Proceed with deletion
+                if (institute == null) return;
+
+                try {
+                  // Remove the course from the courses array
+                  DocumentReference userDocRef = FirebaseFirestore.instance
+                      .collection(institute!)
+                      .doc(FirebaseAuth.instance.currentUser?.email);
+
+                  await userDocRef.update({
+                    'courses': FieldValue.arrayRemove([course])
+                  });
+
+                  // Delete the subcollection
+                  QuerySnapshot subcollectionSnapshot =
+                      await userDocRef.collection(course).get();
+
+                  for (DocumentSnapshot doc in subcollectionSnapshot.docs) {
+                    await doc.reference.delete();
+                  }
+
+                  // Optionally, update the local state if needed
+                  setState(() {
+                    coursesWithGrades.removeWhere(
+                        (courseInfo) => courseInfo['course'] == course);
+                  });
+                } catch (error) {
+                  setState(() {
+                    errorMessage = 'Error deleting course $course: $error';
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Error Deleting Course"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    devtools.log(errorMessage);
+                  });
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -121,93 +192,110 @@ class _MainUiState extends State<MainUi> {
       child: Scaffold(
         backgroundColor: const Color(0xFF131820),
         body: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(settingsRoute);
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(15),
-                            child: Icon(Icons.settings,
-                                size: 30, color: Colors.white),
-                          ),
-                        )
-                      ],
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(settingsRoute);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(15),
+                      child:
+                          Icon(Icons.settings, size: 30, color: Colors.white),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RichText(
-                            text: const TextSpan(
-                                style: TextStyle(
-                                  fontSize: 24,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: "Hello There",
-                                    style: TextStyle(
-                                        color: Color(0xFFF6F9FE),
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ]),
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: const Text(
-                              "Never Underestimate Yourself! See you've come this far",
-                              style: TextStyle(
-                                color: Color(0xFFB9BEC6),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.refresh,
+                      size: 30,
+                      color: Colors.white,
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                   institute == null
-          ? Center(child: CircularProgressIndicator())
-          : Expanded(
-                  child: ListView.builder(
-                    itemCount: coursesWithGrades.length,
-                    itemBuilder: (context, index) {
-                      var courseInfo = coursesWithGrades[index];
-                      return ListTile(
-                        leading: Icon(Icons.book),
-                        title: Text(courseInfo['course']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Relative: ${courseInfo['gradeRelative']}"),
-                            Text("Count: ${courseInfo['count']} documents"),
-                          ],
-                        ),
-                        trailing: Icon(Icons.arrow_forward),
-                        onTap: () {
-                          Navigator.of(context).pushNamed(newCoursePageRoute, arguments: courseInfo['course']);
-                        },
-                      );
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          mainUIRoute,
+                          (route) => false);
                     },
                   ),
-                ),
                 ],
               ),
-            
+            ),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RichText(
+                      text: const TextSpan(
+                          style: TextStyle(
+                            fontSize: 35,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "Hello There",
+                              style: TextStyle(
+                                  color: Color(0xFFF6F9FE),
+                                  fontWeight: FontWeight.w300),
+                            ),
+                          ]),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: const Text(
+                        "Never Underestimate Yourself! See you've come this far",
+                        style: TextStyle(
+                          color: Color(0xFFB9BEC6),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            institute == null
+                ? const Center(child: CircularProgressIndicator())
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: coursesWithGrades.length,
+                      itemBuilder: (context, index) {
+                        var courseInfo = coursesWithGrades[index];
+                        return ListTile(
+                          tileColor: Colors.white,
+                          leading: const Icon(Icons.book),
+                          title: Text(courseInfo['course']),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  "Relative Grade: ${courseInfo['gradeRelative']}"),
+                              Text("Count: ${courseInfo['count']} documents"),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => deleteCourse(courseInfo['course']),
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(newCoursePageRoute,
+                                arguments: courseInfo['course']);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }

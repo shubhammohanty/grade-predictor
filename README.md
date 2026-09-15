@@ -1,4 +1,4 @@
 # grade-predictor app
 
-A new grade-predictor application project for elevateme
+ Grade-predictor application written using flutter
 
